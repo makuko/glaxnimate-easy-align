@@ -18,8 +18,13 @@ def main(window, document, settings):
         return
 
     offset = get_offset(composition, uuid)
-    delta_x = group.transform.anchor_point.value.x - group.transform.position.value.x
-    delta_y = group.transform.anchor_point.value.y - group.transform.position.value.y
+
+    position = group.transform.position.value if group.transform.position.value else Point(0, 0)
+    anchor_point = group.transform.anchor_point.value if group.transform.anchor_point.value else Point(0, 0)
+
+    delta_x = anchor_point.x - position.x
+    delta_y = anchor_point.y - position.y
+
     x = bounding_box["left"] - offset["x"]
     y = bounding_box["top"] - offset["y"]
 

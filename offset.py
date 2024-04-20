@@ -1,5 +1,7 @@
 from glaxnimate.model.shapes import Group
+from glaxnimate.utils import Point
 from parents import get_parents
+import glaxnimate
 
 
 def get_offset(composition, uuid):
@@ -11,7 +13,10 @@ def get_offset(composition, uuid):
 
     for parent in parents:
         if isinstance(parent, Group):
-            offset["x"] += parent.transform.position.value.x - parent.transform.anchor_point.value.x
-            offset["y"] += parent.transform.position.value.y - parent.transform.anchor_point.value.y
+            position = parent.transform.position.value if parent.transform.position.value else Point(0, 0)
+            anchor_point = parent.transform.anchor_point.value if parent.transform.anchor_point.value else Point(0, 0)
+
+            offset["x"] += position.x - anchor_point.x
+            offset["y"] += position.y - anchor_point.y
 
     return offset

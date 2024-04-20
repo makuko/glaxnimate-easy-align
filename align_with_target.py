@@ -78,7 +78,7 @@ def main(window, document, settings):
 
 
 def move_position(position, x, y):
-    position.value = Point(position.value.x + x, position.value.y + y)
+    position.value = Point(position.value.x + x, position.value.y + y) if position.value else Point(x, y)
 
 
 def move_points(path, x, y):
