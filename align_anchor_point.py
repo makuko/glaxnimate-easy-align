@@ -1,7 +1,8 @@
 from glaxnimate.model.shapes import Group
 from glaxnimate.utils import Point
-from bounding_box import get_bounding_box
-from offset import get_offset
+from bounds import get_bounds
+from parents import get_parents
+from transform import discard_transforms
 
 
 def main(window, document, settings):
@@ -10,34 +11,30 @@ def main(window, document, settings):
     group = composition.find_by_uuid(uuid)
 
     if not isinstance(group, Group):
+        window.warning("Please select a layer or group")
         return
 
-    bounding_box = get_bounding_box(composition, uuid)
+    bounds = get_bounds(composition, uuid)
 
-    if bounding_box == None:
+    if bounds == None:
         return
 
-    offset = get_offset(composition, uuid)
-
-    position = group.transform.position.value if group.transform.position.value else Point(0, 0)
-    anchor_point = group.transform.anchor_point.value if group.transform.anchor_point.value else Point(0, 0)
-
-    delta_x = anchor_point.x - position.x
-    delta_y = anchor_point.y - position.y
-
-    x = bounding_box["left"] - offset["x"]
-    y = bounding_box["top"] - offset["y"]
+    offset = Point(bounds.left, bounds.top)
 
     if settings["horizontal"] == "Center":
-        x += bounding_box["width"] / 2
+        offset.x += bounds.width / 2
     elif settings["horizontal"] == "Right":
-        x += bounding_box["width"]
+        offset.x += bounds.width
 
     if settings["vertical"] == "Center":
-        y += bounding_box["height"] / 2
+        offset.y += bounds.height / 2
     elif settings["vertical"] == "Bottom":
-        y += bounding_box["height"]
+        offset.y += bounds.height
+
+    parents = get_parents(composition, uuid)
+    position = discard_transforms(parents, offset)
+    anchor_point = discard_transforms([*parents, group], offset)
 
     with document.macro("Align anchor point"):
-        group.transform.position.value = Point(x, y)
-        group.transform.anchor_point.value = Point(x + delta_x, y + delta_y)
+        group.transform.position.value = position
+        group.transform.anchor_point.value = anchor_point
