@@ -1,6 +1,7 @@
 from os import path
 from glaxnimate.model.shapes import Group, Shape
 
+
 basepath = path.dirname(__file__)
 filepath = path.abspath(path.join(basepath, "target.txt"))
 
