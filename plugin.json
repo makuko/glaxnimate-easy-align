@@ -4,7 +4,7 @@
     "author": "Markus Schmidt",
     "engine": "python",
     "version": 1,
-    "icon": "easy-align.svg",
+    "icon": "icons/easy-align.svg",
     "services": [
         {
             "type": "action",
@@ -19,73 +19,7 @@
             "label": "EasyAlign: Align with target",
             "script": {
                 "module": "align_with_target",
-                "function": "main",
-                "settings": [
-                    {
-                        "name": "target",
-                        "label": "Target",
-                        "type": "info"
-                    },
-                    {
-                        "name": "target_horizontal",
-                        "label": "Horizontal",
-                        "type": "choice",
-                        "default": "Center",
-                        "choices": [
-                            "Left",
-                            "Center",
-                            "Right"
-                        ]
-                    },
-                    {
-                        "name": "target_vertical",
-                        "label": "Vertical",
-                        "type": "choice",
-                        "default": "Center",
-                        "choices": [
-                            "Top",
-                            "Center",
-                            "Bottom"
-                        ]
-                    },
-                    {
-                        "name": "spacer",
-                        "label": "",
-                        "type": "info"
-                    },
-                    {
-                        "name": "selected",
-                        "label": "Selected",
-                        "type": "info"
-                    },
-                    {
-                        "name": "selected_horizontal",
-                        "label": "Horizontal",
-                        "type": "choice",
-                        "default": "Center",
-                        "choices": [
-                            "Left",
-                            "Center",
-                            "Right"
-                        ]
-                    },
-                    {
-                        "name": "selected_vertical",
-                        "label": "Vertical",
-                        "type": "choice",
-                        "default": "Center",
-                        "choices": [
-                            "Top",
-                            "Center",
-                            "Bottom"
-                        ]
-                    },
-                    {
-                        "name": "spacer",
-                        "label": "",
-                        "type": "info"
-                    }
-                ]
+                "function": "main"
             }
         },
         {
@@ -93,36 +27,7 @@
             "label": "EasyAlign: Align anchor point",
             "script": {
                 "module": "align_anchor_point",
-                "function": "main",
-                "settings": [
-                    {
-                        "name": "horizontal",
-                        "label": "Horizontal",
-                        "type": "choice",
-                        "default": "Center",
-                        "choices": [
-                            "Left",
-                            "Center",
-                            "Right"
-                        ]
-                    },
-                    {
-                        "name": "vertical",
-                        "label": "Vertical",
-                        "type": "choice",
-                        "default": "Center",
-                        "choices": [
-                            "Top",
-                            "Center",
-                            "Bottom"
-                        ]
-                    },
-                    {
-                        "name": "spacer",
-                        "label": "",
-                        "type": "info"
-                    }
-                ]
+                "function": "main"
             }
         }
     ]

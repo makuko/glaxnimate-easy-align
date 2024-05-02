@@ -1,5 +1,5 @@
 import math
-from glaxnimate.model.shapes import Group, Shape
+from glaxnimate.model.shapes import Group, Shape, Image, PreCompLayer
 from glaxnimate.utils import Point
 from parents import get_parents
 from transform import transform_point
@@ -33,7 +33,13 @@ def get_bounds(composition, uuid):
     node = composition.find_by_uuid(uuid)
 
     if isinstance(node, Group):
-        return get_group_bounds(composition, uuid)
+        return get_parent_bounds(composition, uuid)
+
+    if isinstance(node, PreCompLayer):
+        return get_parent_bounds(node.composition, node.composition.uuid)
+
+    if isinstance(node, Image):
+        return get_image_bounds(composition, uuid)
 
     if isinstance(node, Shape):
         return get_shape_bounds(composition, uuid)
@@ -41,15 +47,15 @@ def get_bounds(composition, uuid):
     return None
 
 
-def get_group_bounds(composition, uuid):
-    group = composition.find_by_uuid(uuid)
+def get_parent_bounds(composition, uuid):
+    parent = composition.find_by_uuid(uuid)
 
     top = math.inf
     bottom = -math.inf
     left = math.inf
     right = -math.inf
 
-    for node in group.shapes:
+    for node in parent.shapes:
         bounds = get_bounds(composition, node.uuid)
 
         if bounds == None:
@@ -64,6 +70,35 @@ def get_group_bounds(composition, uuid):
         return None
 
     return Bounds(top, bottom, left, right)
+
+
+def get_image_bounds(composition, uuid):
+    parents = get_parents(composition, uuid)
+    image = composition.find_by_uuid(uuid)
+
+    a = Point(0, 0)
+    b = Point(image.image.width, 0)
+    c = Point(image.image.width, image.image.height)
+    d = Point(0, image.image.height)
+
+    for parent in [*parents, image]:
+        if isinstance(parent, Group) or isinstance(parent, Image):
+            anchor_point = parent.transform.anchor_point.value or Point(0, 0)
+            position = parent.transform.position.value or Point(0, 0)
+            scale = parent.transform.scale.value
+            rotation = parent.transform.rotation.value
+
+            transform_point(a, anchor_point, position, scale, rotation)
+            transform_point(b, anchor_point, position, scale, rotation)
+            transform_point(c, anchor_point, position, scale, rotation)
+            transform_point(d, anchor_point, position, scale, rotation)
+
+    return Bounds(
+        min(a.y, b.y, c.y, d.y),
+        max(a.y, b.y, c.y, d.y),
+        min(a.x, b.x, c.x, d.x),
+        max(a.x, b.x, c.x, d.x)
+    )
 
 
 def get_shape_bounds(composition, uuid):

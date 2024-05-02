@@ -1,4 +1,4 @@
-from glaxnimate.model.shapes import Group
+from glaxnimate.model.shapes import Group, PreCompLayer
 
 
 def get_parents(composition, uuid):
@@ -25,5 +25,8 @@ def visit_node(node, uuid, parents):
 
     if isinstance(node, Group):
         return visit_children(node, uuid, parents)
+
+    if isinstance(node, PreCompLayer):
+        return visit_children(node.composition, uuid, parents)
 
     return False
