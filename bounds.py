@@ -1,8 +1,8 @@
 import math
-from glaxnimate.model.shapes import Group, Shape, Image, PreCompLayer
+from glaxnimate.model.shapes import Layer, Group, Shape, Image, PreCompLayer, ShapeElement
 from glaxnimate.utils import Point
 from parents import get_parents
-from transform import transform_point
+from transform import get_transform_values, transform_point
 
 
 class Curve:
@@ -31,24 +31,38 @@ class Bounds:
 
 def get_bounds(composition, uuid):
     node = composition.find_by_uuid(uuid)
+    parents = get_parents(composition, uuid)
+
+    return get_node_bounds(node, parents)
+
+
+def get_node_bounds(node, parents):
+    if isinstance(node, ShapeElement) and not node.visible:
+        return None
+
+    if isinstance(node, Layer):
+        if not node.animation.time_visible:
+            return None
+
+        return get_parent_bounds(node, parents)
 
     if isinstance(node, Group):
-        return get_parent_bounds(composition, uuid)
+        return get_parent_bounds(node, parents)
 
     if isinstance(node, PreCompLayer):
-        return get_parent_bounds(node.composition, node.composition.uuid)
+        return get_precomposition_bounds(node, parents)
 
     if isinstance(node, Image):
-        return get_image_bounds(composition, uuid)
+        return get_image_bounds(node, parents)
 
     if isinstance(node, Shape):
-        return get_shape_bounds(composition, uuid)
+        return get_shape_bounds(node, parents)
 
     return None
 
 
-def get_parent_bounds(composition, uuid):
-    parent = composition.find_by_uuid(uuid)
+def get_parent_bounds(parent, parents):
+    parents = [parent, *parents]
 
     top = math.inf
     bottom = -math.inf
@@ -56,7 +70,7 @@ def get_parent_bounds(composition, uuid):
     right = -math.inf
 
     for node in parent.shapes:
-        bounds = get_bounds(composition, node.uuid)
+        bounds = get_node_bounds(node, parents)
 
         if bounds == None:
             continue
@@ -72,21 +86,26 @@ def get_parent_bounds(composition, uuid):
     return Bounds(top, bottom, left, right)
 
 
-def get_image_bounds(composition, uuid):
-    parents = get_parents(composition, uuid)
-    image = composition.find_by_uuid(uuid)
+def get_precomposition_bounds(precomposition, parents):
+    if not precomposition.composition.visible:
+        return None
 
+    return get_parent_bounds(precomposition.composition, [precomposition, *parents])
+
+
+def get_image_bounds(image, parents):
     a = Point(0, 0)
     b = Point(image.image.width, 0)
     c = Point(image.image.width, image.image.height)
     d = Point(0, image.image.height)
 
-    for parent in [*parents, image]:
-        if isinstance(parent, Group) or isinstance(parent, Image):
-            anchor_point = parent.transform.anchor_point.value or Point(0, 0)
-            position = parent.transform.position.value or Point(0, 0)
-            scale = parent.transform.scale.value
-            rotation = parent.transform.rotation.value
+    for parent in [image, *parents]:
+        if (
+            isinstance(parent, Group)
+            or isinstance(parent, Image)
+            or isinstance(parent, PreCompLayer)
+        ):
+            anchor_point, position, scale, rotation = get_transform_values(parent.transform)
 
             transform_point(a, anchor_point, position, scale, rotation)
             transform_point(b, anchor_point, position, scale, rotation)
@@ -101,9 +120,7 @@ def get_image_bounds(composition, uuid):
     )
 
 
-def get_shape_bounds(composition, uuid):
-    parents = get_parents(composition, uuid)
-    shape = composition.find_by_uuid(uuid)
+def get_shape_bounds(shape, parents):
     path = shape.to_path()
     bezier = path.shape.value
 
@@ -120,11 +137,12 @@ def get_shape_bounds(composition, uuid):
         ))
 
     for parent in parents:
-        if isinstance(parent, Group):
-            anchor_point = parent.transform.anchor_point.value or Point(0, 0)
-            position = parent.transform.position.value or Point(0, 0)
-            scale = parent.transform.scale.value
-            rotation = parent.transform.rotation.value
+        if (
+            isinstance(parent, Group)
+            or isinstance(parent, Image)
+            or isinstance(parent, PreCompLayer)
+        ):
+            anchor_point, position, scale, rotation = get_transform_values(parent.transform)
 
             for curve in curves:
                 transform_point(curve.p0, anchor_point, position, scale, rotation)

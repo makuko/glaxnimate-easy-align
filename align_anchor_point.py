@@ -49,7 +49,7 @@ def main(window, document, settings):
 
         parents = get_parents(composition, uuid)
         position = discard_transforms(parents, offset)
-        anchor_point = discard_transforms([*parents, node], offset)
+        anchor_point = discard_transforms([node, *parents], offset)
 
         with document.macro("Align anchor point"):
             node.transform.position.value = position

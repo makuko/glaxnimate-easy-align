@@ -12,10 +12,7 @@ def discard_transforms(nodes, point):
             or isinstance(node, Image)
             or isinstance(node, PreCompLayer)
         ):
-            anchor_point = node.transform.anchor_point.value or Point(0, 0)
-            position = node.transform.position.value or Point(0, 0)
-            scale = node.transform.scale.value
-            rotation = node.transform.rotation.value
+            anchor_point, position, scale, rotation = get_transform_values(node.transform)
 
             transform_point(point, position, anchor_point, Vector2D(1 / scale.x, 1 / scale.y), -rotation)
 
@@ -31,14 +28,20 @@ def apply_transforms(nodes, point):
             or isinstance(node, Image)
             or isinstance(node, PreCompLayer)
         ):
-            anchor_point = node.transform.anchor_point.value or Point(0, 0)
-            position = node.transform.position.value or Point(0, 0)
-            scale = node.transform.scale.value
-            rotation = node.transform.rotation.value
+            anchor_point, position, scale, rotation = get_transform_values(node.transform)
 
             transform_point(point, anchor_point, position, scale, rotation)
 
     return point
+
+
+def get_transform_values(transform):
+    return (
+        transform.anchor_point.value or Point(0, 0),
+        transform.position.value or Point(0, 0),
+        transform.scale.value,
+        transform.rotation.value
+    )
 
 
 def transform_point(point, anchor_point, position, scale, rotation):
