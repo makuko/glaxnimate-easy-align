@@ -3,7 +3,7 @@
     "description": "Allows easy alignment of anchor points as well as relative to other shapes",
     "author": "Markus Schmidt",
     "engine": "python",
-    "version": 1,
+    "version": 2,
     "icon": "icons/easy-align.svg",
     "services": [
         {
@@ -17,17 +17,91 @@
         {
             "type": "action",
             "label": "EasyAlign: Align with target",
+            "icon": "icons/align-center-center.svg",
             "script": {
                 "module": "align_with_target",
-                "function": "main"
+                "function": "main",
+                "settings": [
+                    {
+                        "name": "horizontal",
+                        "type": "choice",
+                        "label": "Horizontal edge",
+                        "default": "center",
+                        "choices": {
+                            "(no change)": "keep",
+                            "Left": "left",
+                            "Center": "center",
+                            "Right": "right"
+                        }
+                    },
+                    {
+                        "name": "target_horizontal",
+                        "type": "choice",
+                        "label": "to target's",
+                        "default": "center",
+                        "choices": {
+                            "Left": "left",
+                            "Center": "center",
+                            "Right": "right"
+                        }
+                    },
+                    {
+                        "name": "vertical",
+                        "type": "choice",
+                        "label": "Vertical edge",
+                        "default": "center",
+                        "choices": {
+                            "(no change)": "keep",
+                            "Top": "top",
+                            "Center": "center",
+                            "Bottom": "bottom"
+                        }
+                    },
+                    {
+                        "name": "target_vertical",
+                        "type": "choice",
+                        "label": "to target's",
+                        "default": "center",
+                        "choices": {
+                            "Top": "top",
+                            "Center": "center",
+                            "Bottom": "bottom"
+                        }
+                    }
+                ]
             }
         },
         {
             "type": "action",
             "label": "EasyAlign: Align anchor point",
+            "icon": "icons/ap-center-center.svg",
             "script": {
                 "module": "align_anchor_point",
-                "function": "main"
+                "function": "main",
+                "settings": [
+                    {
+                        "name": "vertical",
+                        "type": "choice",
+                        "label": "Vertical",
+                        "default": "center",
+                        "choices": {
+                            "Top": "top",
+                            "Center": "center",
+                            "Bottom": "bottom"
+                        }
+                    },
+                    {
+                        "name": "horizontal",
+                        "type": "choice",
+                        "label": "Horizontal",
+                        "default": "center",
+                        "choices": {
+                            "Left": "left",
+                            "Center": "center",
+                            "Right": "right"
+                        }
+                    }
+                ]
             }
         }
     ]
