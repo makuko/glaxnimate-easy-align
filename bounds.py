@@ -1,7 +1,7 @@
 import math
 from glaxnimate.model.shapes import Layer, Group, Shape, Image, PreCompLayer, ShapeElement
 from glaxnimate.utils import Point
-from parents import get_parents
+from parents import find_node, get_parents
 from transform import get_transform_values, transform_point
 
 
@@ -30,7 +30,7 @@ class Bounds:
 
 
 def get_bounds(composition, uuid):
-    node = composition.find_by_uuid(uuid)
+    node = find_node(composition, uuid)
     parents = get_parents(composition, uuid)
 
     return get_node_bounds(node, parents)

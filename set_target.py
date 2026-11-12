@@ -1,5 +1,6 @@
 from os import path
 from glaxnimate.model.shapes import Group, Shape, Image, PreCompLayer
+from message import warning
 
 
 basepath = path.dirname(__file__)
@@ -15,7 +16,7 @@ def main(window, document, settings):
         and not isinstance(node, Image)
         and not isinstance(node, PreCompLayer)
     ):
-        window.warning("Please select a layer, group, shape, image or precomposition")
+        warning(window, "Please select a layer, group, shape, image or precomposition")
 
         return
 
